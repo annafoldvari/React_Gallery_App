@@ -1,26 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import './css/index.css';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import PhotoContainer from './components/PhotoContainer';
+import SearchForm from './components/SearchForm';
+import Nav from './components/Nav';
+import Nf404 from './components/Nf404';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {  
+  render() {
+    return (
+      <BrowserRouter>
+      <div className="container">
+        <Route component={SearchForm} />
+        <Nav />
+        <Switch>
+          <Route exact path='/' render = { () => <PhotoContainer search="puppy" />} />
+          <Route exact path='/search' />
+          <Route path='/search/:search' render = { ({match}) => <PhotoContainer search={match.params.search} />} />
+          <Route path='/puppies' render = { () => <PhotoContainer search="puppy" />} />
+          <Route path='/kittens' render = { () => <PhotoContainer search="kitten" />} />
+          <Route path='/beaches' render = { () => <PhotoContainer search="beach" />} />
+          <Route component={Nf404} />
+        </Switch>
+      </div>
+      </BrowserRouter>
+    );
+
+  }
 }
 
 export default App;

@@ -123,3 +123,8 @@ input {
     width: 100px;
   }
 }
+
+.photo-container ul img.loading_icon {
+  width: 100px;
+  margin: auto;
+}
