@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import apiKey from '../config';
-import Photo from './Photo';
-import NotFound from './NotFound';
+import PhotoList from './PhotoList';
+import Loader from './Loader';
 import axios from 'axios';
 
 class PhotoContainer extends Component {
@@ -9,7 +9,8 @@ class PhotoContainer extends Component {
     super();
     this.state = {
       photos: [],
-      loading: true
+      loading: false,
+      search: ""
     };
   }
 
@@ -20,14 +21,18 @@ class PhotoContainer extends Component {
   }
 
   componentDidUpdate() {
-    if (this.props.search) {
-      this.performSearch(this.props.search);
+    if (this.props.search !== this.state.search) {
+      this.performSearch(this.props.search)
     }
   }
 
   
-  performSearch = (query) => {
-    axios.get(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&per_page=24&format=json&nojsoncallback=1`)
+  performSearch = (query) => {  
+    this.setState({
+      search: this.props.search,
+      loading: true
+    })
+    axios.get(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&per_page=24&format=json&nojsoncallback=1`)    
     .then(response => {
       this.setState({
         photos: response.data.photos.photo,
@@ -41,24 +46,10 @@ class PhotoContainer extends Component {
 
   render() {
 
-    let photos;
-
-    if (this.state.photos.length > 0) {
-      photos = this.state.photos.map(photo => 
-        <Photo farm={photo.farm} secret={photo.secret} server={photo.server} key={photo.id} id={photo.id} />
-      );
-    } else {
-      photos = <NotFound />
-    }
-
-    const loader = <img class="loading_icon" src="/loading.gif" alt="loading indicatator"/>;
-
     return (
       <div className="photo-container">
           <h2>Results</h2>
-          <ul>
-            {this.state.loading ? loader : photos}
-          </ul>
+          {this.state.loading ? <Loader /> : <PhotoList data={this.state.photos} />}
       </div>
     );
   }
